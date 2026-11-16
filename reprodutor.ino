@@ -1,12 +1,15 @@
 // CCP020 - Reprodutor de músicas no Arduino UNO
-// Menu no LCD 16x2, 4 botões (UP, DOWN, PLAY/PAUSE, STOP),
+// Menu no LCD 16x2 com módulo I2C, 4 botões (UP, DOWN, PLAY/PAUSE, STOP),
 // LED verde = tocando, LED vermelho = pausado, LED azul pisca no ritmo, música no buzzer.
 
-#include <LiquidCrystal.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>   // biblioteca "LiquidCrystal I2C" (Frank de Brabander)
 #include "musicas.h"
 
 // ---------- Pinos ----------
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);   // RS, E, D4, D5, D6, D7
+// LCD I2C: SDA no A4, SCL no A5. Endereço mais comum: 0x27 (alguns módulos usam 0x3F).
+const uint8_t LCD_ENDERECO = 0x27;
+LiquidCrystal_I2C lcd(LCD_ENDERECO, 16, 2);
 const uint8_t PINO_BUZZER   = 8;
 const uint8_t LED_VERDE     = 6;
 const uint8_t LED_VERMELHO  = 7;
@@ -90,12 +93,24 @@ void mostraProgresso() {
 }
 
 // ---------- Reprodução ----------
-// Lê a nota i da FLASH, calcula a duração e começa a tocar
+// Lê a frequência e a figura da nota i na FLASH (aceita os formatos A e B)
+void leNota(uint8_t i, int16_t &freq, int16_t &divisor) {
+  const Musica &m = musicas[selecionada];
+  if (m.figuras) {                              // formato B: dois vetores
+    freq    = pgm_read_word(&m.notas[i]);
+    divisor = pgm_read_word(&m.figuras[i]);
+  } else {                                      // formato A: pares
+    freq    = pgm_read_word(&m.notas[i * 2]);
+    divisor = pgm_read_word(&m.notas[i * 2 + 1]);
+  }
+}
+
+// Calcula a duração da nota i e começa a tocar
 void tocaNota(uint8_t i) {
   const Musica &m = musicas[selecionada];
-  int16_t freq    = pgm_read_word(&m.notas[i * 2]);
+  int16_t freq, divisor;
+  leNota(i, freq, divisor);
   freqAtual = freq;
-  int16_t divisor = pgm_read_word(&m.notas[i * 2 + 1]);
 
   unsigned long semibreve = (60000UL * 4) / m.tempo;
   if (divisor > 0) {
@@ -136,10 +151,9 @@ void continua() {
 
   // Toca o restante da nota interrompida
   inicioNota = millis() - tempoPausado;
-  int16_t freq = pgm_read_word(&musicas[selecionada].notas[notaAtual * 2]);
   unsigned int somRestante = duracaoNota * 9 / 10;
-  if (freq != REST && tempoPausado < somRestante) {
-    tone(PINO_BUZZER, freq, somRestante - tempoPausado);
+  if (freqAtual != REST && tempoPausado < somRestante) {
+    tone(PINO_BUZZER, freqAtual, somRestante - tempoPausado);
   }
 }
 
@@ -176,7 +190,8 @@ void setup() {
   pinMode(PINO_BUZZER, OUTPUT);
 
   Serial.begin(9600);
-  lcd.begin(16, 2);
+  lcd.init();
+  lcd.backlight();
   tela("Reprodutor", "CCP020");
   delay(1500);
   mostraMenu();

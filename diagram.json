@@ -18,22 +18,6 @@
       "attrs": {}
     },
     {
-      "type": "wokwi-lcd1602",
-      "id": "lcd",
-      "top": -79.97,
-      "left": -6.0,
-      "attrs": {}
-    },
-    {
-      "type": "wokwi-resistor",
-      "id": "rlcd",
-      "top": 64.55,
-      "left": 179.6,
-      "attrs": {
-        "value": "1000"
-      }
-    },
-    {
       "type": "wokwi-resistor",
       "id": "rY",
       "top": 64.55,
@@ -140,153 +124,18 @@
         "color": "red",
         "key": "s"
       }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": -120,
+      "left": 20,
+      "attrs": {
+        "pins": "i2c"
+      }
     }
   ],
   "connections": [
-    [
-      "lcd:VSS",
-      "bb1:1t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:VDD",
-      "bb1:2t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:V0",
-      "bb1:3t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:RS",
-      "bb1:4t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:RW",
-      "bb1:5t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:E",
-      "bb1:6t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D0",
-      "bb1:7t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D1",
-      "bb1:8t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D2",
-      "bb1:9t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D3",
-      "bb1:10t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D4",
-      "bb1:11t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D5",
-      "bb1:12t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D6",
-      "bb1:13t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:D7",
-      "bb1:14t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:A",
-      "bb1:15t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "lcd:K",
-      "bb1:16t.a",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "rlcd:1",
-      "bb1:17t.c",
-      "",
-      [
-        "$bb"
-      ]
-    ],
-    [
-      "rlcd:2",
-      "bb1:23t.c",
-      "",
-      [
-        "$bb"
-      ]
-    ],
     [
       "rY:1",
       "bb1:45t.c",
@@ -420,84 +269,6 @@
     [
       "bb1:bn.50",
       "bb1:tn.50",
-      "black",
-      []
-    ],
-    [
-      "bb1:1t.e",
-      "bb1:tn.1",
-      "black",
-      []
-    ],
-    [
-      "bb1:2t.e",
-      "bb1:tp.2",
-      "red",
-      []
-    ],
-    [
-      "bb1:3t.e",
-      "bb1:17t.e",
-      "orange",
-      []
-    ],
-    [
-      "bb1:23t.e",
-      "bb1:tn.18",
-      "black",
-      []
-    ],
-    [
-      "bb1:4t.e",
-      "uno:12",
-      "green",
-      []
-    ],
-    [
-      "bb1:5t.e",
-      "bb1:tn.4",
-      "black",
-      []
-    ],
-    [
-      "bb1:6t.e",
-      "uno:11",
-      "green",
-      []
-    ],
-    [
-      "bb1:11t.e",
-      "uno:5",
-      "blue",
-      []
-    ],
-    [
-      "bb1:12t.e",
-      "uno:4",
-      "blue",
-      []
-    ],
-    [
-      "bb1:13t.e",
-      "uno:3",
-      "blue",
-      []
-    ],
-    [
-      "bb1:14t.e",
-      "uno:2",
-      "blue",
-      []
-    ],
-    [
-      "bb1:15t.e",
-      "bb1:tp.12",
-      "red",
-      []
-    ],
-    [
-      "bb1:16t.e",
-      "bb1:tn.13",
       "black",
       []
     ],
@@ -759,6 +530,30 @@
       "bb1:tn.25",
       "bb1:tn.26",
       "black",
+      []
+    ],
+    [
+      "lcd:GND",
+      "bb1:tn.5",
+      "black",
+      []
+    ],
+    [
+      "lcd:VCC",
+      "bb1:tp.5",
+      "red",
+      []
+    ],
+    [
+      "lcd:SDA",
+      "uno:A4",
+      "blue",
+      []
+    ],
+    [
+      "lcd:SCL",
+      "uno:A5",
+      "purple",
       []
     ]
   ],

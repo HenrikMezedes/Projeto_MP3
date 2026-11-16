@@ -1,5 +1,7 @@
 // Programa de TESTE do hardware do reprodutor.
-// Acende cada LED, toca o buzzer e mostra os botões no Monitor Serial (9600).
+// Procura o LCD I2C, acende cada LED, toca o buzzer e mostra os botões no Monitor Serial (9600).
+
+#include <Wire.h>
 
 const uint8_t LEDS[3]       = {6, 7, 9};
 const char *NOMES_LEDS[3]   = {"LED VERDE (pino 6)", "LED VERMELHO (pino 7)", "LED AZUL (pino 9)"};
@@ -14,6 +16,20 @@ void setup() {
   for (uint8_t i = 0; i < 4; i++) pinMode(BOTOES[i], INPUT_PULLUP);
 
   Serial.println(F("===== TESTE DE HARDWARE ====="));
+
+  // Procura dispositivos I2C (o LCD costuma responder em 0x27 ou 0x3F)
+  Wire.begin();
+  bool achou = false;
+  for (uint8_t end = 1; end < 127; end++) {
+    Wire.beginTransmission(end);
+    if (Wire.endTransmission() == 0) {
+      Serial.print(F("LCD I2C encontrado no endereco 0x"));
+      Serial.println(end, HEX);
+      achou = true;
+    }
+  }
+  if (!achou) Serial.println(F("Nenhum LCD I2C encontrado (confira SDA no A4 e SCL no A5)"));
+
   for (uint8_t i = 0; i < 3; i++) {
     Serial.print(F("Acendendo ")); Serial.println(NOMES_LEDS[i]);
     digitalWrite(LEDS[i], HIGH);
