@@ -243,7 +243,7 @@ O LCD com módulo I2C fica fora da protoboard e usa **4 jumpers macho-fêmea**: 
 | `diagram.json` | circuito para simulação no Wokwi |
 | `libraries.txt` | bibliotecas usadas na simulação |
 | `fotos/` | fotos e capturas do projeto |
-| `video/` | vídeo do projeto funcionando |
+| `video/` | vídeo do projeto funcionando (com som) |
 
 ### Máquina de estados
 O programa é organizado em três estados. Cada botão tem um efeito diferente conforme o estado atual.
@@ -359,8 +359,9 @@ O circuito completo foi montado no simulador Wokwi para validar o código antes 
 
 ### Vídeo
 <p align="center">
-  <a href="video/reprodutor-funcionando.mp4"><img src="fotos/08-funcionando.jpg" width="260" alt="Clique para assistir ao vídeo"></a>
-  <br><em>Clique na imagem para assistir ao vídeo (20 s): navegação no menu e reprodução com os LEDs indicando o estado.</em>
+  <img src="fotos/09-demo.gif" width="270" alt="Demonstração do reprodutor funcionando">
+  <br><em>Demonstração (20 s): navegação no menu e reprodução com os LEDs indicando o estado.</em>
+  <br><a href="video/reprodutor-funcionando.mp4">Baixar o vídeo original com som (.mp4)</a>
 </p>
 
 ---
