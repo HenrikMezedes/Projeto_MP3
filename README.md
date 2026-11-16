@@ -182,8 +182,7 @@ Os botões usam o resistor de *pull-up* interno do ATmega328P (`INPUT_PULLUP`). 
 Cada botão ocupa **duas linhas**. O fio que vai ao Arduino sai da linha das **pernas de cima**, e o fio que vai ao **−** sai da linha das **pernas de baixo**, sempre do mesmo lado do vão em que o botão está.
 
 <p align="center">
-  <img src="fotos/04-alimentacao-e-botoes.jpg" width="300" alt="Alimentação e botões">
-  &nbsp;
+ 
   <img src="fotos/05-botoes-na-protoboard.jpg" width="300" alt="Posição dos botões">
   <br><em>Figura 3 — Alimentação e botões na protoboard.</em>
 </p>
