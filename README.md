@@ -3,7 +3,7 @@
 **Disciplina:** CCP020 — Digital Experience Ultimate
 **Instituição:** Centro Universitário FEI
 **Aluno:** Henrik Mezedes Batista
-**Professor:** Isaac
+**Professor:** André
 
 Reprodutor de músicas com menu em display LCD 16x2 (módulo I2C), quatro botões de controle, três LEDs de estado e saída de áudio por buzzer. As melodias ficam armazenadas na memória FLASH do microcontrolador.
 
