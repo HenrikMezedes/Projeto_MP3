@@ -397,9 +397,27 @@ O circuito completo foi montado no simulador Wokwi para validar o código antes 
 - Adafruit — Multi-tasking the Arduino (por que evitar `delay()`): <https://learn.adafruit.com/multi-tasking-the-arduino-part-1>
 
 ### Ferramentas de apoio
-<!-- Declare aqui, com suas palavras, as ferramentas usadas no desenvolvimento (por exemplo, assistentes de IA) e para que foram usadas, conforme o guia de ética da disciplina. -->
+- **Assistente de IA (Claude):** usado para recomendar fontes de consulta (documentação e referências listadas acima) e para ajudar a organizar os tópicos deste README.
+- **Wokwi:** simulação do circuito antes da montagem física.
 
 ---
 
 ## 13. Conclusão
-<!-- Descreva com detalhes como você resolveu o problema, as dificuldades encontradas e o que aprendeu. -->
+O objetivo do projeto era construir um reprodutor de músicas no Arduino UNO com menu em LCD, quatro botões de controle, LEDs de estado e saída de áudio por buzzer, guardando pelo menos cinco melodias na memória FLASH. Todos os requisitos do enunciado foram atendidos, além de dois extras: um LED que pisca no ritmo das notas e a exibição do menu também no Monitor Serial.
+
+### Como o problema foi resolvido
+A solução foi dividida em partes independentes. Primeiro, as melodias foram organizadas em `musicas.h` como pares `{frequência, figura}`, o que permitiu calcular a duração de cada nota a partir do andamento da música em vez de escrever tempos fixos em milissegundos. Como o ATmega328P tem apenas 2 KB de RAM, as músicas foram guardadas com `PROGMEM` e lidas uma nota por vez com `pgm_read_word()`, deixando a RAM livre para o restante do programa.
+
+Em seguida, o comportamento do reprodutor foi modelado como uma máquina de três estados (MENU, TOCANDO e PAUSADO). Isso deixou claro o que cada botão deve fazer em cada situação e evitou condições confusas espalhadas pelo código. Para que os botões respondessem mesmo durante a música, a reprodução foi feita sem `delay()`: o `loop()` apenas verifica, com `millis()`, se a nota atual já terminou. Com isso também foi possível implementar a pausa que retoma exatamente do ponto onde a música parou.
+
+Por fim, o circuito foi validado no Wokwi antes da montagem física, o que separou os erros de código dos erros de ligação, e o programa `teste/teste.ino` foi usado para conferir cada componente da placa real isoladamente.
+
+### Dificuldades encontradas
+- **Montagem física:** a maior dificuldade foi montar o circuito na protoboard. Os trilhos de alimentação divididos ao meio, a posição de cada fio na mesma coluna da perna do componente e o ajuste de contraste do LCD exigiram várias conferências até tudo funcionar.
+- **Botões:** precisei fazer vários testes nos botões. Os botões de 4 pernas têm pares já ligados internamente, então, dependendo da orientação, eles pareciam sempre apertados ou não respondiam. Usei o programa `teste/teste.ino` para ver no Monitor Serial cada botão apertado e corrigir a posição deles. No código, um toque também podia ser contado várias vezes por causa da trepidação mecânica, o que resolvi com detecção de borda e *debounce* de 30 ms.
+- **LED azul no ritmo da música:** fazer o LED azul acompanhar as notas foi um desafio, porque ele precisa acender e apagar junto com cada nota sem atrapalhar a reprodução. A solução foi ligar o LED apenas enquanto a nota está soando (os primeiros 90% da duração) e apagá-lo no silêncio entre as notas e nas pausas (`REST`), usando o mesmo controle de tempo com `millis()` da reprodução.
+- **Memória limitada:** com as melodias na RAM, o programa não caberia no Arduino. A solução foi usar a memória FLASH com `PROGMEM`.
+- **Responsividade dos botões:** com `delay()` o Arduino ficaria travado durante cada nota e não perceberia os botões. A temporização com `millis()` resolveu o problema.
+
+### O que aprendi
+O projeto mostrou na prática como as limitações de hardware influenciam o software: a quantidade de RAM definiu onde guardar os dados, e a necessidade de ler botões durante a música definiu a forma de controlar o tempo. Também aprendi a usar uma máquina de estados para organizar um programa interativo, a usar os resistores de *pull-up* internos, a comunicar com o LCD pelo barramento I2C e a gerar notas musicais com `tone()`. Por último, ficou claro o valor de testar em etapas — simulação, teste de hardware e só então o programa completo — para encontrar e corrigir problemas mais rápido.
