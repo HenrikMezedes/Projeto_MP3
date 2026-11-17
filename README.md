@@ -32,7 +32,17 @@ Reprodutor de músicas com menu em display LCD 16x2 (módulo I2C), quatro botõe
 ---
 
 ## 1. Introdução
-<!-- Escreva com suas palavras: o problema proposto e os objetivos do projeto. -->
+O desafio proposto na disciplina foi construir um reprodutor de músicas usando um Arduino UNO. O sistema deveria mostrar um menu de músicas em um display LCD 16x2, permitir navegar e controlar a reprodução por botões, indicar o estado da música com LEDs e tocar as melodias em um buzzer. Além disso, as músicas deveriam ficar armazenadas na memória FLASH do microcontrolador, já que a RAM do Arduino UNO é muito pequena.
+
+Os objetivos do projeto foram:
+- montar o circuito completo na protoboard, com LCD, botões, LEDs e buzzer;
+- criar um menu navegável com os botões UP e DOWN;
+- tocar, pausar, retomar e parar as músicas com os botões PLAY/PAUSE e STOP;
+- indicar com o LED verde que a música está tocando e com o LED vermelho que está pausada;
+- guardar pelo menos cinco músicas na memória FLASH;
+- como extras, fazer um LED azul piscar no ritmo das notas e mostrar o menu também no Monitor Serial.
+
+Para isso, o projeto envolveu conceitos de eletrônica (ligações na protoboard, resistores de *pull-up* e barramento I2C) e de programação embarcada (máquina de estados, controle de tempo com `millis()` e uso da memória FLASH).
 
 ---
 
