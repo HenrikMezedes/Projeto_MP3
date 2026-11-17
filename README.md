@@ -1,101 +1,70 @@
 # Reprodutor de Músicas com Arduino UNO
 
-**Disciplina:** CCP020 — Digital Experience Ultimate
-**Instituição:** Centro Universitário FEI
-**Aluno:** Henrik Mezedes Batista
-**Professor:** André
+Disciplina: CCP020 - Digital Experience Ultimate
+Centro Universitário FEI
+Aluno: Henrik Mezedes Batista
+Professor: André
 
-Reprodutor de músicas com menu em display LCD 16x2 (módulo I2C), quatro botões de controle, três LEDs de estado e saída de áudio por buzzer. As melodias ficam armazenadas na memória FLASH do microcontrolador.
+Reprodutor de músicas feito no Arduino UNO, com menu num LCD 16x2 (I2C), 4 botões, 3 LEDs e um buzzer pra tocar as músicas. As melodias ficam guardadas na memória FLASH.
 
 <p align="center">
   <img src="fotos/07-simulacao-wokwi.png" width="560" alt="Simulação do circuito no Wokwi">
-  <br><em>Figura 1 — Circuito completo simulado no Wokwi, com o menu exibido no LCD.</em>
+  <br><em>Figura 1 - Circuito simulado no Wokwi, com o menu no LCD.</em>
 </p>
 
 ---
 
-## Sumário
-1. [Introdução](#1-introdução)
-2. [Requisitos do projeto](#2-requisitos-do-projeto)
-3. [Como usar](#3-como-usar)
-4. [Materiais](#4-materiais)
-5. [Esquema de ligações](#5-esquema-de-ligações)
-6. [Montagem na protoboard](#6-montagem-na-protoboard)
-7. [Funcionamento do código](#7-funcionamento-do-código)
-8. [Como compilar e carregar](#8-como-compilar-e-carregar)
-9. [Simulação no Wokwi](#9-simulação-no-wokwi)
-10. [Experimentos](#10-experimentos)
-11. [Tecnologias utilizadas](#11-tecnologias-utilizadas)
-12. [Inspirações e fontes](#12-inspirações-e-fontes)
-13. [Conclusão](#13-conclusão)
-
----
-
 ## 1. Introdução
-O desafio proposto na disciplina foi construir um reprodutor de músicas usando um Arduino UNO. O sistema deveria mostrar um menu de músicas em um display LCD 16x2, permitir navegar e controlar a reprodução por botões, indicar o estado da música com LEDs e tocar as melodias em um buzzer. Além disso, as músicas deveriam ficar armazenadas na memória FLASH do microcontrolador, já que a RAM do Arduino UNO é muito pequena.
+A proposta da disciplina era fazer um reprodutor de músicas com o Arduino UNO. Ele tinha que mostrar um menu de músicas num LCD 16x2, ter botões pra navegar e controlar a música, LEDs mostrando se está tocando ou pausado, e tocar as melodias num buzzer. As músicas tinham que ficar na memória FLASH, porque a RAM do Arduino UNO é bem pequena (2 KB).
 
-Os objetivos do projeto foram:
-- montar o circuito completo na protoboard, com LCD, botões, LEDs e buzzer;
-- criar um menu navegável com os botões UP e DOWN;
-- tocar, pausar, retomar e parar as músicas com os botões PLAY/PAUSE e STOP;
-- indicar com o LED verde que a música está tocando e com o LED vermelho que está pausada;
-- guardar pelo menos cinco músicas na memória FLASH;
-- como extras, fazer um LED azul piscar no ritmo das notas e mostrar o menu também no Monitor Serial.
+O que eu precisava fazer:
+- montar o circuito na protoboard com o LCD, os botões, os LEDs e o buzzer;
+- fazer um menu que dá pra navegar com os botões UP e DOWN;
+- tocar, pausar, continuar e parar a música com PLAY/PAUSE e STOP;
+- acender o LED verde quando a música está tocando e o vermelho quando está pausada;
+- guardar pelo menos 5 músicas na FLASH.
 
-Para isso, o projeto envolveu conceitos de eletrônica (ligações na protoboard, resistores de *pull-up* e barramento I2C) e de programação embarcada (máquina de estados, controle de tempo com `millis()` e uso da memória FLASH).
+Além disso, coloquei dois extras: um LED azul que pisca junto com as notas e o menu aparecendo também no Monitor Serial.
 
 ---
 
 ## 2. Requisitos do projeto
 
-| Requisito do enunciado | Como foi atendido |
+| Requisito | Como fiz |
 |---|---|
-| Menu de músicas no display LCD 16x2 | Menu com a música selecionada e a próxima da lista |
-| Botões UP e DOWN para navegar | Pinos A0 e A1, com navegação circular |
-| Botão PLAY/PAUSE | Pino A2: toca, pausa e retoma do ponto onde parou |
-| Botão STOP | Pino A3: interrompe a música e volta ao menu |
-| LED verde enquanto toca | Pino 6 |
-| LED vermelho quando pausado | Pino 7 |
-| Música tocada no buzzer | Pino 8, com a função `tone()` |
-| No mínimo 5 músicas na memória FLASH | 6 músicas em `PROGMEM` |
-| **Extra:** LED que pisca no ritmo | Pino 9: acende enquanto cada nota soa |
-| **Extra:** tela no computador | O menu também é exibido no Monitor Serial |
+| Menu de músicas no LCD 16x2 | Mostra a música selecionada e a próxima da lista |
+| Botões UP e DOWN | Pinos A0 e A1, a lista dá a volta no final |
+| Botão PLAY/PAUSE | Pino A2, toca, pausa e continua de onde parou |
+| Botão STOP | Pino A3, para a música e volta pro menu |
+| LED verde tocando | Pino 6 |
+| LED vermelho pausado | Pino 7 |
+| Música no buzzer | Pino 8, com `tone()` |
+| Mínimo de 5 músicas na FLASH | 6 músicas em `PROGMEM` |
+| Extra: LED no ritmo | Pino 9, acende enquanto a nota toca |
+| Extra: tela no computador | Menu também no Monitor Serial |
 
 ---
 
 ## 3. Como usar
 
-### Controles
-
-| Botão | No menu | Durante a música | Com a música pausada |
+| Botão | No menu | Tocando | Pausado |
 |---|---|---|---|
-| **UP** | sobe na lista | — | — |
-| **DOWN** | desce na lista | — | — |
-| **PLAY/PAUSE** | toca a música selecionada | pausa | continua de onde parou |
-| **STOP** | — | volta ao menu | volta ao menu |
+| UP | sobe na lista | - | - |
+| DOWN | desce na lista | - | - |
+| PLAY/PAUSE | toca a música | pausa | continua |
+| STOP | - | volta pro menu | volta pro menu |
 
-### Indicadores
+LED verde = tocando, LED vermelho = pausado, LED azul = pisca a cada nota. Quando a música acaba ele volta sozinho pro menu.
 
-| LED | Estado |
-|---|---|
-| Verde | música tocando |
-| Vermelho | música pausada |
-| Azul | pisca no ritmo de cada nota |
+Músicas (todas de domínio público):
+1. Ode à Alegria (Beethoven)
+2. Brilha Brilha Estrelinha
+3. Parabéns pra Você
+4. Jingle Bells
+5. Für Elise (Beethoven)
+6. Tetris (Korobeiniki)
 
-Quando a música termina, o sistema volta sozinho para o menu.
-
-### Músicas disponíveis
-1. Ode à Alegria — L. van Beethoven
-2. Brilha Brilha Estrelinha — melodia tradicional francesa
-3. Parabéns pra Você — Mildred J. Hill e Patty Hill
-4. Jingle Bells — J. L. Pierpont
-5. Für Elise — L. van Beethoven
-6. Tetris (Korobeiniki) — canção folclórica russa
-
-Todas são de domínio público.
-
-### Tela
-O menu aparece no LCD e também no **Monitor Serial** da Arduino IDE (9600 baud), desenhado como uma tela de 16x2:
+O menu também aparece no Monitor Serial da Arduino IDE (9600 baud), assim:
 
 ```
 +----------------+
@@ -112,129 +81,92 @@ O menu aparece no LCD e também no **Monitor Serial** da Arduino IDE (9600 baud)
 |:---:|:---:|:---:|
 | <img src="fotos/02-arduino-uno.jpg" width="200" alt="Arduino UNO"> | <img src="fotos/03-lcd-16x2.jpg" width="200" alt="LCD 16x2"> | <img src="fotos/01-leds.jpg" width="200" alt="LEDs"> |
 
-| Qtd | Componente | Função |
-|---|---|---|
-| 1 | Arduino UNO |
-| 1 | Display LCD 16x2 com módulo I2C |
-| 4 | Botões táteis 6×6 mm |
-| 3 | LEDs 5 mm (verde, vermelho, azul) |
-| 3 | Resistores 220 Ω |
-| 1 | Buzzer passivo |
-| 1 | Protoboard 830 pontos |
-| ~30 | Jumpers macho-macho | ligações |
-| 4 | Jumpers macho-fêmea |
+- 1 Arduino UNO
+- 1 LCD 16x2 com módulo I2C
+- 4 botões 6x6 mm
+- 3 LEDs (verde, vermelho e azul)
+- 3 resistores de 220 Ω
+- 1 buzzer passivo
+- 1 protoboard de 830 pontos
+- uns 30 jumpers macho-macho
+- 4 jumpers macho-fêmea (pro LCD)
 
-> **Observação:** o buzzer precisa ser **passivo**. O buzzer ativo emite um único tom fixo e não reproduz as notas.
+O buzzer tem que ser passivo. O ativo só faz um bip fixo e não toca as notas.
 
 ---
 
 ## 5. Esquema de ligações
 
-### Arduino — barra DIGITAL
-
-| Pino | Componente |
+| Pino do Arduino | Ligado em |
 |---|---|
-| 6 | LED verde (via 220 Ω) |
-| 7 | LED vermelho (via 220 Ω) |
-| 8 | Buzzer (+) |
-| 9 | LED azul (via 220 Ω) |
+| 5V | trilho + da protoboard |
+| GND | trilho - da protoboard |
+| 6 | LED verde (com resistor 220 Ω) |
+| 7 | LED vermelho (com resistor 220 Ω) |
+| 8 | buzzer (+) |
+| 9 | LED azul (com resistor 220 Ω) |
+| A0 | botão UP |
+| A1 | botão DOWN |
+| A2 | botão PLAY/PAUSE |
+| A3 | botão STOP |
+| A4 | SDA do LCD |
+| A5 | SCL do LCD |
 
-### Arduino — barras POWER e ANALOG IN
+O LCD tem um módulo I2C atrás, então em vez de 16 pinos ele usa só 4 fios: GND, VCC, SDA e SCL. No UNO o I2C é sempre nos pinos A4 (SDA) e A5 (SCL). O endereço do módulo normalmente é `0x27`, mas tem alguns que são `0x3F` (o programa de teste mostra qual é). O contraste se ajusta no potenciômetro azul atrás do módulo.
 
-| Pino | Componente |
-|---|---|
-| 5V | linha **+** da protoboard |
-| GND | linha **−** da protoboard |
-| A0 | Botão UP |
-| A1 | Botão DOWN |
-| A2 | Botão PLAY/PAUSE |
-| A3 | Botão STOP |
-| A4 | LCD SDA (dados I2C) |
-| A5 | LCD SCL (relógio I2C) |
-
-### LCD 16x2 com módulo I2C
-
-| Pino do módulo | Ligação |
-|---|---|
-| GND | linha − (GND) |
-| VCC | linha + (5V) |
-| SDA | pino A4 |
-| SCL | pino A5 |
-
-O módulo I2C converte os 16 pinos do LCD em apenas 4 fios. No Arduino UNO, o barramento I2C fica fixo nos pinos **A4 (SDA)** e **A5 (SCL)**. O endereço padrão do módulo é `0x27`; alguns usam `0x3F` (o programa de teste mostra qual é o seu). O contraste é ajustado no potenciômetro azul atrás do módulo.
-
-### Por que os botões não têm resistor
-Os botões usam o resistor de *pull-up* interno do ATmega328P (`INPUT_PULLUP`). Com o botão solto, o pino lê `HIGH`; ao apertar, o botão liga o pino ao GND e ele passa a ler `LOW`. Isso dispensa os resistores externos e simplifica a montagem.
+Os botões não têm resistor porque usei o pull-up interno do Arduino (`INPUT_PULLUP`). Solto, o pino lê `HIGH`; apertado, o botão liga o pino no GND e ele lê `LOW`.
 
 ---
 
 ## 6. Montagem na protoboard
 
-### Como a protoboard funciona
-- **Área central:** os 5 furos de uma mesma coluna (**a–e** ou **f–j**) são ligados entre si. O vão do meio separa as duas metades.
-- **Trilhos + e −:** cada linha é ligada de ponta a ponta. Nesta protoboard os trilhos são **divididos no meio**, por isso um jumper liga as duas metades.
-- **Regra prática:** ligar um fio a uma perna é colocar o fio em um furo livre da **mesma coluna** dessa perna, do mesmo lado do vão.
-
-### Mapa completo
+Na protoboard, os 5 furos de cada coluna (a-e ou f-j) são ligados entre si, e o vão do meio separa as duas metades. Os trilhos + e - vão de ponta a ponta, mas nessa protoboard eles são cortados no meio, então precisei de um jumper pra ligar as duas metades. Pra ligar um fio numa perna de componente é só colocar o fio na mesma coluna da perna, do mesmo lado do vão.
 
 <p align="center">
   <img src="fotos/mapa-protoboard.png" width="900" alt="Mapa da protoboard">
-  <br><em>Figura 2 — Posição de cada peça e de cada fio na protoboard. As etiquetas coloridas indicam o pino do Arduino.</em>
+  <br><em>Figura 2 - Onde fica cada peça e cada fio. As etiquetas coloridas mostram o pino do Arduino.</em>
 </p>
 
-### Etapa 1 — Alimentação
-1. **5V** do Arduino na linha **+**.
-2. **GND** do Arduino na linha **−**.
-3. Um jumper liga o **−** de cima ao **−** de baixo.
-4. Um jumper em cada linha **−** atravessa a divisão do meio do trilho.
+### Alimentação
+5V do Arduino no trilho + e GND no trilho -. Um jumper liga o - de cima com o - de baixo, e mais um jumper em cada trilho - passa pela divisão do meio.
 
-### Etapa 2 — Botões
-Cada botão ocupa **duas linhas**. O fio que vai ao Arduino sai da linha das **pernas de cima**, e o fio que vai ao **−** sai da linha das **pernas de baixo**, sempre do mesmo lado do vão em que o botão está.
+### Botões
+Cada botão ocupa duas colunas. O fio pro Arduino sai da coluna de uma perna e o fio pro - sai da coluna da outra perna.
 
 <p align="center">
- 
   <img src="fotos/05-botoes-na-protoboard.jpg" width="300" alt="Posição dos botões">
-  <br><em>Figura 3 — Alimentação e botões na protoboard.</em>
+  <br><em>Figura 3 - Alimentação e botões.</em>
 </p>
 
-> **Dica:** se um botão parecer sempre apertado ou nunca responder, gire-o 90° no mesmo lugar. Os botões de 4 pernas têm dois pares de pernas já ligados internamente.
+Os botões de 4 pernas têm pares de pernas já ligados por dentro. Se o botão ficar como se estivesse sempre apertado, ou não responder, é só girar ele 90°.
 
-### Etapa 3 — LEDs e buzzer
-Cada peça recebe **um fio vindo do Arduino** e **um fio indo para o −**.
-
-| Peça | Fio do Arduino | Fio para o − |
-|---|---|---|
-| LED azul | ponta livre do resistor | perna curta do LED |
-| LED verde | ponta livre do resistor | perna curta do LED |
-| LED vermelho | ponta livre do resistor | perna curta do LED |
-| Buzzer | perna **+** | perna **−** |
-
-> A perna **longa** do LED é o **+** (ânodo) e fica do lado do resistor. O resistor não tem polaridade.
+### LEDs e buzzer
+Cada LED tem um resistor do lado da perna longa (+). O fio do Arduino vai na ponta livre do resistor e a perna curta do LED vai pro -. No buzzer, o + vai no pino 8 e o - no trilho -.
 
 <p align="center">
   <img src="fotos/06-montagem-completa.jpg" width="320" alt="Montagem completa">
-  <br><em>Figura 4 — Montagem completa com botões, LEDs e buzzer.</em>
+  <br><em>Figura 4 - Montagem completa.</em>
 </p>
 
-### Etapa 4 — LCD
-O LCD com módulo I2C fica fora da protoboard e usa **4 jumpers macho-fêmea**: a ponta fêmea vai no pino do módulo, e a ponta macho vai no trilho ou no Arduino, conforme a tabela da seção 5. Se a tela acender mas não mostrar texto, gire o potenciômetro azul atrás do módulo com uma chave de fenda pequena.
+### LCD
+O LCD fica fora da protoboard e é ligado com 4 jumpers macho-fêmea, seguindo a tabela da seção 5. Se a tela acender mas não aparecer nada escrito, tem que girar o potenciômetro atrás do módulo.
 
 <details>
-<summary><strong>Posição exata de cada peça na protoboard (clique para abrir)</strong></summary>
+<summary>Posição de cada peça na protoboard</summary>
 
-<br>Protoboard deitada: colunas 1 a 63, fileiras **a–e** (metade de cima) e **f–j** (metade de baixo).
+<br>Protoboard deitada, colunas 1 a 63, fileiras a-e em cima e f-j embaixo.
 
 | Peça | Posição | Fios |
 |---|---|---|
-| LCD I2C | fora da protoboard | GND → −; VCC → +; SDA → A4; SCL → A5 |
-| Botão UP | metade de cima, colunas 25 e 27 | a25 → A0; a27 → − |
-| Botão DOWN | metade de baixo, colunas 25 e 27 | j25 → A1; j27 → − |
-| Botão PLAY/PAUSE | atravessando o vão, colunas 34 e 36 | a34 → A2; j36 → − |
-| Botão STOP | atravessando o vão, colunas 39 e 41 | a39 → A3; j41 → − |
-| LED azul | resistor c45–c51; LED: longa a51, curta a52 | pino 9 → e45; e52 → − |
-| LED verde | resistor h45–h51; LED: longa f51, curta f52 | pino 6 → j45; j52 → − |
-| LED vermelho | resistor h54–h60; LED: longa f60, curta f61 | pino 7 → j54; j61 → − |
-| Buzzer | − em a57, + em a60 | pino 8 → e60; e57 → − |
+| LCD I2C | fora da protoboard | GND → -, VCC → +, SDA → A4, SCL → A5 |
+| Botão UP | em cima, colunas 25 e 27 | a25 → A0, a27 → - |
+| Botão DOWN | embaixo, colunas 25 e 27 | j25 → A1, j27 → - |
+| Botão PLAY/PAUSE | no vão, colunas 34 e 36 | a34 → A2, j36 → - |
+| Botão STOP | no vão, colunas 39 e 41 | a39 → A3, j41 → - |
+| LED azul | resistor c45-c51, LED a51 (longa) e a52 (curta) | pino 9 → e45, e52 → - |
+| LED verde | resistor h45-h51, LED f51 (longa) e f52 (curta) | pino 6 → j45, j52 → - |
+| LED vermelho | resistor h54-h60, LED f60 (longa) e f61 (curta) | pino 7 → j54, j61 → - |
+| Buzzer | - em a57, + em a60 | pino 8 → e60, e57 → - |
 
 </details>
 
@@ -242,20 +174,15 @@ O LCD com módulo I2C fica fora da protoboard e usa **4 jumpers macho-fêmea**: 
 
 ## 7. Funcionamento do código
 
-### Estrutura dos arquivos
+Arquivos:
+- `reprodutor.ino`: programa principal (menu, botões, LEDs e música)
+- `musicas.h`: notas e as 6 músicas
+- `teste/teste.ino`: programa pra testar o hardware
+- `diagram.json` e `libraries.txt`: pra simular no Wokwi
+- `fotos/` e `video/`: fotos e vídeo do projeto
 
-| Arquivo | Conteúdo |
-|---|---|
-| `reprodutor.ino` | menu, leitura dos botões, LEDs e reprodução |
-| `musicas.h` | notas musicais e lista das 6 músicas |
-| `teste/teste.ino` | programa de teste do hardware |
-| `diagram.json` | circuito para simulação no Wokwi |
-| `libraries.txt` | bibliotecas usadas na simulação |
-| `fotos/` | fotos e capturas do projeto |
-| `video/` | vídeo do projeto funcionando (com som) |
-
-### Máquina de estados
-O programa é organizado em três estados. Cada botão tem um efeito diferente conforme o estado atual.
+### Estados
+O programa tem três estados: MENU, TOCANDO e PAUSADO. O que cada botão faz depende do estado em que ele está.
 
 ```mermaid
 stateDiagram-v2
@@ -268,8 +195,8 @@ stateDiagram-v2
     PAUSADO --> MENU: STOP
 ```
 
-### Músicas na memória FLASH
-O ATmega328P tem só **2 KB de RAM** e **32 KB de FLASH**. Se as melodias ficassem na RAM, faltaria memória. Por isso elas são declaradas com `PROGMEM` e lidas uma nota por vez com `pgm_read_word()`:
+### Músicas na FLASH
+O ATmega328P tem 2 KB de RAM e 32 KB de FLASH. Se as músicas ficassem na RAM não ia caber, então elas são declaradas com `PROGMEM` e o programa lê uma nota por vez com `pgm_read_word()`:
 
 ```cpp
 const int16_t odeAlegria[] PROGMEM = {
@@ -279,155 +206,136 @@ const int16_t odeAlegria[] PROGMEM = {
 int16_t freq = pgm_read_word(&m.notas[i * 2]);
 ```
 
-Resultado da compilação: cerca de **35% da FLASH** e **33% da RAM** usados.
+Compilado, o programa usa mais ou menos 35% da FLASH e 33% da RAM.
 
-### Formato das notas
-Cada nota é um par `{frequência, figura}`:
-- **frequência** em Hz (`NOTE_A4` = 440 Hz; `REST` = pausa);
-- **figura musical:** 1 = semibreve, 2 = mínima, 4 = semínima, 8 = colcheia, 16 = semicolcheia; valor **negativo** = nota pontuada (1,5×).
+### Notas
+Cada nota é um par `{frequência, figura}`. A frequência é em Hz (`NOTE_A4` = 440, `REST` = pausa) e a figura é 1 pra semibreve, 2 mínima, 4 semínima, 8 colcheia e 16 semicolcheia. Se o número for negativo, a nota é pontuada (dura 1,5x).
 
-A duração em milissegundos é calculada a partir do andamento (BPM) de cada música:
+A duração sai do BPM de cada música:
 
 ```
-semibreve (ms) = 60000 × 4 / BPM
-duração        = semibreve / figura      (× 1,5 se pontuada)
+semibreve (ms) = 60000 * 4 / BPM
+duração        = semibreve / figura   (x 1,5 se for pontuada)
 ```
 
-Cada nota soa por 90% da duração, e os 10% restantes ficam em silêncio para separar notas repetidas.
+A nota toca por 90% do tempo e fica 10% em silêncio, senão duas notas iguais seguidas viram uma só.
 
-### Reprodução sem `delay()`
-Em vez de parar o programa com `delay()` a cada nota, o `loop()` verifica com `millis()` se a nota atual já terminou. Assim o Arduino continua lendo os botões durante a música, e pausar ou parar responde na hora.
+### Sem delay()
+Se eu usasse `delay()` em cada nota, o Arduino ficaria parado e não ia ler os botões durante a música. Então o `loop()` só confere com `millis()` se a nota já acabou:
 
 ```cpp
 if (millis() - inicioNota >= duracaoNota) {
-  notaAtual++;            // passa para a próxima nota
+  notaAtual++;
   tocaNota(notaAtual);
 }
 ```
 
-### Pausa e retomada
-Ao pausar, o programa guarda quanto tempo da nota atual já passou. Ao retomar, toca só o restante dessa nota e segue a partir dela.
+Pra pausar, o programa guarda quanto tempo da nota já tinha passado. Quando continua, ele toca só o que faltava dessa nota e segue dali.
 
-### Leitura dos botões
-Cada botão é lido por **detecção de borda** (só conta a passagem de solto para apertado) com *debounce* de 30 ms, para que um toque não seja contado várias vezes.
+### Botões
+Os botões são lidos por borda, ou seja, só conta quando o botão passa de solto pra apertado, com debounce de 30 ms pra um toque não contar várias vezes.
 
-### Tela dupla
-A função `tela()` escreve as mesmas duas linhas no LCD e no Monitor Serial. Isso permitiu testar o menu antes de o LCD estar ligado.
+### Tela no LCD e no Serial
+A função `tela()` escreve as mesmas duas linhas no LCD e no Monitor Serial. Isso ajudou porque deu pra testar o menu antes de ligar o LCD.
 
 ---
 
 ## 8. Como compilar e carregar
 
-1. Coloque `reprodutor.ino` e `musicas.h` numa pasta chamada **`reprodutor`**.
-2. Instale a biblioteca do LCD: **Ferramentas → Gerenciar Bibliotecas**, busque **LiquidCrystal I2C** e instale a de **Frank de Brabander**.
-3. Abra o `reprodutor.ino` na **Arduino IDE**.
-4. Selecione **Ferramentas → Placa → Arduino Uno** e a **Porta** (`/dev/ttyUSB0` ou `/dev/ttyACM0` no Linux, `COMx` no Windows).
-5. Clique em **Carregar**.
-6. Abra **Ferramentas → Monitor Serial** em **9600 baud** para ver a tela.
+1. Coloque `reprodutor.ino` e `musicas.h` numa pasta chamada `reprodutor`.
+2. Instale a biblioteca do LCD em Ferramentas > Gerenciar Bibliotecas, procurando "LiquidCrystal I2C" (a do Frank de Brabander).
+3. Abra o `reprodutor.ino` na Arduino IDE.
+4. Escolha a placa Arduino Uno e a porta (`/dev/ttyUSB0` ou `/dev/ttyACM0` no Linux, `COMx` no Windows).
+5. Clique em Carregar.
+6. Abra o Monitor Serial em 9600 baud pra ver a tela.
 
-<details>
-<summary><strong>Configuração no Linux (Fedora)</strong></summary>
+No Fedora eu precisei fazer isso:
 
 ```bash
-flatpak install flathub cc.arduino.IDE2   # instala a Arduino IDE
-sudo usermod -aG dialout $USER            # permissão da porta USB (sair e entrar na sessão)
-sudo dnf remove brltty                    # só se a porta não aparecer (conflito com o chip CH340)
+flatpak install flathub cc.arduino.IDE2   # Arduino IDE
+sudo usermod -aG dialout $USER            # permissão da porta USB (precisa sair e entrar de novo)
+sudo dnf remove brltty                    # se a porta não aparecer (conflito com o chip CH340)
 ```
-</details>
 
-### Teste de hardware
-O programa `teste/teste.ino` verifica cada componente separadamente: procura o LCD no barramento I2C e mostra o endereço dele, acende os LEDs um a um, toca um bip no buzzer e mostra no Monitor Serial cada botão apertado. Ele ajuda a localizar fios mal encaixados antes de carregar o reprodutor.
+O `teste/teste.ino` testa cada peça separada: procura o LCD no I2C e mostra o endereço, acende os LEDs um por um, faz um bip no buzzer e mostra no Monitor Serial qual botão foi apertado. Usei bastante pra achar fio mal encaixado.
 
 ---
 
 ## 9. Simulação no Wokwi
 
-O circuito completo pode ser simulado no navegador, sem nenhum componente físico:
-
 1. Abra [wokwi.com/projects/new/arduino-uno](https://wokwi.com/projects/new/arduino-uno).
-2. Cole o `reprodutor.ino` na aba **sketch.ino** e o `diagram.json` na aba **diagram.json**.
-3. Crie os arquivos `musicas.h` e `libraries.txt` (seta ao lado das abas → *New file*) e cole o conteúdo de cada um. O `libraries.txt` faz o Wokwi instalar a biblioteca do LCD I2C.
-4. Clique em **Start**.
+2. Cole o `reprodutor.ino` na aba sketch.ino e o `diagram.json` na aba diagram.json.
+3. Crie os arquivos `musicas.h` e `libraries.txt` (na seta do lado das abas, New file) e cole o conteúdo. O `libraries.txt` serve pro Wokwi instalar a biblioteca do LCD.
+4. Clique em Start.
 
-Atalhos de teclado: **↑** = UP, **↓** = DOWN, **P** = PLAY/PAUSE, **S** = STOP.
+No teclado: ↑ = UP, ↓ = DOWN, P = PLAY/PAUSE, S = STOP.
 
 ---
 
 ## 10. Experimentos
 
-### Experimento 1 — Simulação no Wokwi
-O circuito completo foi montado no simulador Wokwi para validar o código antes da montagem física. O menu aparece corretamente no LCD, com a música selecionada marcada por `>` e a próxima música logo abaixo (Figura 1).
+### Simulação no Wokwi
+Antes de montar de verdade, simulei o circuito inteiro no Wokwi pra ver se o código funcionava. O menu apareceu certo no LCD, com `>` na música selecionada e a próxima embaixo (Figura 1).
 
-### Experimento 2 — Montagem física
+### Montagem física
 <!-- Descreva o teste na placa real: o que funcionou, quais problemas apareceram e como foram resolvidos. -->
 
 <p align="center">
   <img src="fotos/08-funcionando.jpg" width="300" alt="Reprodutor funcionando">
-  <br><em>Figura 5 — Montagem física funcionando: "Jingle Bells" tocando (nota 18 de 51), com o LED azul aceso no ritmo da música.</em>
+  <br><em>Figura 5 - Funcionando na placa: Jingle Bells tocando (nota 18 de 51) com o LED azul aceso.</em>
 </p>
 
 ### Vídeo
 <p align="center">
   <img src="fotos/09-demo.gif" width="270" alt="Demonstração do reprodutor funcionando">
-  <br><em>Demonstração (20 s): navegação no menu e reprodução com os LEDs indicando o estado.</em>
-  <br><a href="video/reprodutor-funcionando.mp4">Baixar o vídeo original com som (.mp4)</a>
+  <br><em>Navegando no menu e tocando uma música.</em>
+  <br><a href="video/reprodutor-funcionando.mp4">Vídeo com som (.mp4)</a>
 </p>
 
 ---
 
 ## 11. Tecnologias utilizadas
-- **Linguagem:** C++ (Arduino)
-- **IDE:** Arduino IDE 2
-- **Bibliotecas:** `LiquidCrystal_I2C` e `Wire` (display I2C) e `avr/pgmspace.h` (memória FLASH)
-- **Funções principais:** `tone()`, `noTone()`, `millis()`, `pgm_read_word()`, `pinMode(INPUT_PULLUP)`
-- **Simulação:** Wokwi
-- **Depuração:** Monitor Serial
-- **Versionamento:** Git e GitHub
+- C++ (Arduino) na Arduino IDE 2
+- Bibliotecas `LiquidCrystal_I2C`, `Wire` e `avr/pgmspace.h`
+- `tone()`, `noTone()`, `millis()`, `pgm_read_word()` e `INPUT_PULLUP`
+- Wokwi pra simular
+- Monitor Serial pra depurar
+- Git e GitHub
 
 ---
 
 ## 12. Inspirações e fontes
 
-### Inspirações
-- **arduino-songs (Robson Couto):** repositório com melodias para Arduino que inspirou o formato `{nota, figura}`, com valores negativos para notas pontuadas. As melodias deste projeto foram transcritas separadamente e guardadas em `PROGMEM`.
-  <https://github.com/robsoncouto/arduino-songs>
-- **Exemplo toneMelody (Arduino):** exemplo oficial que usa `tone()` com tabela de notas (`pitches.h`) e figuras musicais.
-  <https://www.arduino.cc/en/Tutorial/BuiltInExamples/toneMelody>
+O formato das músicas como `{nota, figura}`, com número negativo pra nota pontuada, veio do repositório arduino-songs, do Robson Couto. As melodias deste projeto eu transcrevi separado e coloquei em `PROGMEM`.
+<https://github.com/robsoncouto/arduino-songs>
 
-### Documentação consultada
-- Arduino — função `tone()`: <https://docs.arduino.cc/language-reference/en/functions/advanced-io/tone/>
-- Arduino — função `noTone()`: <https://docs.arduino.cc/language-reference/en/functions/advanced-io/noTone>
-- Arduino — `PROGMEM`: <https://docs.arduino.cc/language-reference/en/variables/utilities/PROGMEM/>
-- Biblioteca LiquidCrystal_I2C: <https://github.com/johnrickman/LiquidCrystal_I2C>
-- Arduino — LCD 16x2 e controlador HD44780: <https://docs.arduino.cc/learn/electronics/lcd-displays>
-- Arduino — Blink Without Delay (temporização com `millis()`): <https://docs.arduino.cc/built-in-examples/digital/BlinkWithoutDelay>
-- Arduino — Input Pullup Serial (`INPUT_PULLUP`): <https://docs.arduino.cc/built-in-examples/digital/InputPullupSerial/>
-- Arduino — Digital Pins (resistores de pull-up internos): <https://docs.arduino.cc/learn/microcontrollers/digital-pins>
-- Wokwi — referência do botão (`wokwi-pushbutton`): <https://docs.wokwi.com/parts/wokwi-pushbutton>
-- Adafruit — Multi-tasking the Arduino (por que evitar `delay()`): <https://learn.adafruit.com/multi-tasking-the-arduino-part-1>
+Também usei como base o exemplo toneMelody da Arduino, que toca músicas com `tone()` e uma tabela de notas.
+<https://www.arduino.cc/en/Tutorial/BuiltInExamples/toneMelody>
+
+Documentação que consultei:
+- `tone()`: <https://docs.arduino.cc/language-reference/en/functions/advanced-io/tone/>
+- `noTone()`: <https://docs.arduino.cc/language-reference/en/functions/advanced-io/noTone>
+- `PROGMEM`: <https://docs.arduino.cc/language-reference/en/variables/utilities/PROGMEM/>
+- LiquidCrystal_I2C: <https://github.com/johnrickman/LiquidCrystal_I2C>
+- LCD 16x2: <https://docs.arduino.cc/learn/electronics/lcd-displays>
+- Blink Without Delay (`millis()`): <https://docs.arduino.cc/built-in-examples/digital/BlinkWithoutDelay>
+- Input Pullup Serial: <https://docs.arduino.cc/built-in-examples/digital/InputPullupSerial/>
+- Digital Pins: <https://docs.arduino.cc/learn/microcontrollers/digital-pins>
+- Botão no Wokwi: <https://docs.wokwi.com/parts/wokwi-pushbutton>
+- Multi-tasking the Arduino (Adafruit): <https://learn.adafruit.com/multi-tasking-the-arduino-part-1>
 
 ### Ferramentas de apoio
-- **Assistente de IA (Claude):** usado para recomendar fontes de consulta (documentação e referências listadas acima) e para ajudar a organizar os tópicos deste README.
-- **Wokwi:** simulação do circuito antes da montagem física.
+Usei IA (Claude) pra me recomendar fontes de consulta, que são as que estão listadas acima, e pra me ajudar a organizar os tópicos deste README. Também usei o Wokwi pra simular o circuito antes de montar.
 
 ---
 
 ## 13. Conclusão
-O objetivo do projeto era construir um reprodutor de músicas no Arduino UNO com menu em LCD, quatro botões de controle, LEDs de estado e saída de áudio por buzzer, guardando pelo menos cinco melodias na memória FLASH. Todos os requisitos do enunciado foram atendidos, além de dois extras: um LED que pisca no ritmo das notas e a exibição do menu também no Monitor Serial.
+Consegui fazer tudo o que o trabalho pedia e ainda coloquei os dois extras, o LED azul no ritmo e o menu no Monitor Serial.
 
-### Como o problema foi resolvido
-A solução foi dividida em partes independentes. Primeiro, as melodias foram organizadas em `musicas.h` como pares `{frequência, figura}`, o que permitiu calcular a duração de cada nota a partir do andamento da música em vez de escrever tempos fixos em milissegundos. Como o ATmega328P tem apenas 2 KB de RAM, as músicas foram guardadas com `PROGMEM` e lidas uma nota por vez com `pgm_read_word()`, deixando a RAM livre para o restante do programa.
+Comecei pelas músicas. Coloquei elas no `musicas.h` como pares de nota e figura, assim a duração de cada nota é calculada pelo BPM e eu não precisei escrever tempo em milissegundos na mão. Como a RAM é muito pequena, as músicas ficaram na FLASH com `PROGMEM`. Depois organizei o programa em três estados (menu, tocando e pausado), o que deixou bem mais fácil saber o que cada botão tem que fazer. Pra conseguir ler os botões enquanto a música toca, não usei `delay()`, e sim `millis()`, e isso também permitiu fazer a pausa continuar do ponto exato onde parou. Antes de montar, testei tudo no Wokwi, e na placa usei o `teste.ino` pra conferir cada componente.
 
-Em seguida, o comportamento do reprodutor foi modelado como uma máquina de três estados (MENU, TOCANDO e PAUSADO). Isso deixou claro o que cada botão deve fazer em cada situação e evitou condições confusas espalhadas pelo código. Para que os botões respondessem mesmo durante a música, a reprodução foi feita sem `delay()`: o `loop()` apenas verifica, com `millis()`, se a nota atual já terminou. Com isso também foi possível implementar a pausa que retoma exatamente do ponto onde a música parou.
+A parte mais difícil foi a montagem física. Com os trilhos cortados no meio, os fios que precisam ficar na mesma coluna da perna e o contraste do LCD, tive que conferir a montagem várias vezes até funcionar. Os botões também deram trabalho e eu precisei fazer vários testes com eles. Os de 4 pernas têm pares ligados por dentro, então dependendo de como estavam encaixados pareciam sempre apertados ou não respondiam. Usei o `teste.ino` pra ver no Monitor Serial qual botão estava sendo lido e acertei a posição deles. No código, um toque às vezes contava mais de uma vez, e isso resolvi com o debounce.
 
-Por fim, o circuito foi validado no Wokwi antes da montagem física, o que separou os erros de código dos erros de ligação, e o programa `teste/teste.ino` foi usado para conferir cada componente da placa real isoladamente.
+Outra coisa que deu trabalho foi fazer o LED azul acompanhar as notas. Ele tinha que acender e apagar junto com cada nota sem atrapalhar a música. No fim, ele fica aceso só enquanto a nota está soando (os 90% da duração), apaga no silêncio entre uma nota e outra e não acende nas pausas (`REST`), usando o mesmo controle de tempo com `millis()`.
 
-### Dificuldades encontradas
-- **Montagem física:** a maior dificuldade foi montar o circuito na protoboard. Os trilhos de alimentação divididos ao meio, a posição de cada fio na mesma coluna da perna do componente e o ajuste de contraste do LCD exigiram várias conferências até tudo funcionar.
-- **Botões:** precisei fazer vários testes nos botões. Os botões de 4 pernas têm pares já ligados internamente, então, dependendo da orientação, eles pareciam sempre apertados ou não respondiam. Usei o programa `teste/teste.ino` para ver no Monitor Serial cada botão apertado e corrigir a posição deles. No código, um toque também podia ser contado várias vezes por causa da trepidação mecânica, o que resolvi com detecção de borda e *debounce* de 30 ms.
-- **LED azul no ritmo da música:** fazer o LED azul acompanhar as notas foi um desafio, porque ele precisa acender e apagar junto com cada nota sem atrapalhar a reprodução. A solução foi ligar o LED apenas enquanto a nota está soando (os primeiros 90% da duração) e apagá-lo no silêncio entre as notas e nas pausas (`REST`), usando o mesmo controle de tempo com `millis()` da reprodução.
-- **Memória limitada:** com as melodias na RAM, o programa não caberia no Arduino. A solução foi usar a memória FLASH com `PROGMEM`.
-- **Responsividade dos botões:** com `delay()` o Arduino ficaria travado durante cada nota e não perceberia os botões. A temporização com `millis()` resolveu o problema.
-
-### O que aprendi
-O projeto mostrou na prática como as limitações de hardware influenciam o software: a quantidade de RAM definiu onde guardar os dados, e a necessidade de ler botões durante a música definiu a forma de controlar o tempo. Também aprendi a usar uma máquina de estados para organizar um programa interativo, a usar os resistores de *pull-up* internos, a comunicar com o LCD pelo barramento I2C e a gerar notas musicais com `tone()`. Por último, ficou claro o valor de testar em etapas — simulação, teste de hardware e só então o programa completo — para encontrar e corrigir problemas mais rápido.
+Com esse projeto aprendi como o hardware limita o software: foi a RAM pequena que me fez usar a FLASH, e foi a necessidade de ler os botões durante a música que me fez trocar o `delay()` pelo `millis()`. Também aprendi a usar máquina de estados, o pull-up interno, o LCD por I2C e o `tone()` pra tocar notas. E percebi que testar por partes (primeiro na simulação, depois o hardware, e só depois o programa completo) faz achar os erros bem mais rápido.
